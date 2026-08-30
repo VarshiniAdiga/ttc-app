@@ -1,0 +1,41 @@
+{
+  "name": "ttc",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "dev:native": "turbo run dev -F native --",
+    "dev:server": "turbo run dev -F server --",
+    "db:push": "turbo run db:push -F @ttc/db --",
+    "db:studio": "turbo run db:studio -F @ttc/db --",
+    "db:generate": "turbo run db:generate -F @ttc/db --",
+    "db:migrate": "turbo run db:migrate -F @ttc/db --",
+    "deploy": "turbo run deploy -F @ttc/infra --",
+    "destroy": "turbo run destroy -F @ttc/infra --"
+  },
+  "dependencies": {
+    "@ttc/env": "*",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260728.1",
+    "@ttc/config": "*",
+    "@types/node": "^26.2.0",
+    "turbo": "^2.10.7",
+    "typescript": "^6.0.3"
+  },
+  "packageManager": "npm@12.0.2",
+  "allowScripts": {
+    "esbuild": true,
+    "sharp": true,
+    "msgpackr-extract": true,
+    "workerd": true
+  }
+}

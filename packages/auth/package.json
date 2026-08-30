@@ -1,0 +1,25 @@
+{
+  "name": "@ttc/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@better-auth/expo": "1.7.1",
+    "@ttc/db": "*",
+    "@ttc/env": "*",
+    "better-auth": "1.7.1",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@ttc/config": "*",
+    "typescript": "^6.0.3"
+  }
+}

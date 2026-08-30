@@ -1,0 +1,3 @@
+{
+  "extends": "@ttc/config/tsconfig.base.json"
+}

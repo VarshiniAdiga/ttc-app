@@ -1,0 +1,23 @@
+{
+  "name": "@ttc/infra",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "dev": "alchemy dev",
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@effect/platform-bun": "4.0.0-rc.108",
+    "@effect/platform-node": "4.0.0-rc.108",
+    "@ttc/config": "*",
+    "alchemy": "2.0.0-beta.72",
+    "effect": "4.0.0-rc.108",
+    "typescript": "^6.0.3"
+  }
+}

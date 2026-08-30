@@ -1,0 +1,12 @@
+{
+  // Local/dev config for running the Worker with `wrangler dev`.
+  // Deploys still go through packages/infra (Alchemy). Secrets live in .dev.vars (gitignored).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ttc-server",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "APP_ENV": "development"
+  }
+}

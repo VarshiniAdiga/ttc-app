@@ -1,0 +1,9 @@
+{
+  "name": "@ttc/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./dev-users": "./src/dev-users.ts",
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  }
+}
