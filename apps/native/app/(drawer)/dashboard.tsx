@@ -1,17 +1,14 @@
-import { Column, Host, Text as ExpoText } from "@expo/ui";
+import { Column } from "@expo/ui";
 import { useQuery } from "@tanstack/react-query";
 import type { Prediction } from "@ttc/domain";
-import { ScrollView, StyleSheet, View } from "react-native";
 
-import { Container } from "@/components/container";
+import { Body, Card, Chip, Heading, Screen, SkeletonList } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
-import { NAV_THEME } from "@/lib/constants";
 import { useDevUser } from "@/lib/dev-user";
-import { useColorScheme } from "@/lib/use-color-scheme";
 
-// Phase 5 — the shared dashboard. It shows ONLY what the partner has consented to
+// Phase 5 — the shared dashboard. It shows ONLY what the partner consented to
 // share; the server returns nulls for anything not granted, so this screen never
-// has to make the privacy decision.
+// makes the privacy decision itself.
 
 type Dash = {
   partner: { userId: string; displayName: string | null; role: string | null } | null;
@@ -28,12 +25,10 @@ function habitLine(h: Record<string, unknown>): string {
     h.heatExposure ? "🔥 heat" : null,
     h.stressLevel != null && `stress ${h.stressLevel}/5`,
   ].filter(Boolean);
-  return `${h.date}: ${parts.length ? parts.join(" · ") : "—"}`;
+  return `${h.date}: ${parts.length ? parts.join("  ·  ") : "—"}`;
 }
 
 export default function Dashboard() {
-  const { colorScheme } = useColorScheme();
-  const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
   const { role } = useDevUser();
 
   const q = useQuery({
@@ -45,65 +40,49 @@ export default function Dashboard() {
   const fw = d?.fertileWindow;
 
   return (
-    <Container>
-      <ScrollView style={styles.scroll} contentInsetAdjustmentBehavior="never">
-        <View style={styles.content}>
-          <Host matchContents={{ vertical: true }}>
-            <Column spacing={16}>
-              <ExpoText textStyle={{ color: theme.text, fontSize: 22, fontWeight: "bold" }}>
-                {`Shared dashboard (${role})`}
-              </ExpoText>
+    <Screen eyebrow="Together" title="Shared dashboard" subtitle="What the two of you have chosen to share, in one calm view.">
+      {q.isLoading && <SkeletonList rows={2} />}
 
-              {q.isLoading && (
-                <ExpoText textStyle={{ color: theme.text, fontSize: 14 }}>loading…</ExpoText>
-              )}
+      {d && !d.partner && (
+        <Card>
+          <Body tone="muted">Not linked to a partner yet. Send an invite from To-dos & invite.</Body>
+        </Card>
+      )}
 
-              {d && !d.partner && (
-                <ExpoText textStyle={{ color: theme.text, fontSize: 14 }} style={{ opacity: 0.7 }}>
-                  Not linked to a partner yet.
-                </ExpoText>
-              )}
-
-              {d?.partner && (
-                <ExpoText textStyle={{ color: theme.text, fontSize: 14 }} style={{ opacity: 0.7 }}>
-                  {`Partner: ${d.partner.displayName ?? d.partner.userId} (${d.partner.role ?? "?"})`}
-                </ExpoText>
-              )}
-
-              <Card theme={theme} title="Her fertile window">
-                {fw
-                  ? fw.status === "insufficient_data"
-                    ? fw.message
-                    : `Next period ~ ${fw.nextPeriodStart}\nFertile ${fw.fertileWindow.start} → ${fw.fertileWindow.end}\nconfidence ${fw.confidence}`
-                  : "Not shared."}
-              </Card>
-
-              <Card theme={theme} title="His habits (latest)">
-                {d?.habit ? habitLine(d.habit) : "Not shared."}
-              </Card>
-
-              <ExpoText textStyle={{ color: theme.text, fontSize: 12 }} style={{ opacity: 0.6 }}>
-                Guidance, not medical advice.
-              </ExpoText>
+      {d?.partner && (
+        <Card variant="olive" spacing={8}>
+          <Body tone="onPrimary" size={12} weight="600">YOUR PARTNER</Body>
+          <Body tone="onPrimary" size={18} weight="bold">{d.partner.displayName ?? d.partner.userId.slice(0, 8)}</Body>
+          {d.partner.role ? (
+            <Column style={{ paddingTop: 4 }}>
+              <Chip label={d.partner.role} tone="accent" />
             </Column>
-          </Host>
-        </View>
-      </ScrollView>
-    </Container>
+          ) : null}
+        </Card>
+      )}
+
+      <Heading>Her fertile window</Heading>
+      <Card variant={fw && fw.status !== "insufficient_data" ? "accent" : "surface"} spacing={8}>
+        {fw ? (
+          fw.status === "insufficient_data" ? (
+            <Body tone="muted">{fw.message}</Body>
+          ) : (
+            <Column spacing={4}>
+              <Body tone="onAccent" size={17} weight="bold">{`Fertile  ${fw.fertileWindow.start} → ${fw.fertileWindow.end}`}</Body>
+              <Body tone="onAccent" size={13}>{`Next period ~ ${fw.nextPeriodStart} · confidence ${fw.confidence}`}</Body>
+            </Column>
+          )
+        ) : (
+          <Body tone="muted">Not shared.</Body>
+        )}
+      </Card>
+
+      <Heading>His habits (latest)</Heading>
+      <Card>
+        <Body>{d?.habit ? habitLine(d.habit) : "Not shared."}</Body>
+      </Card>
+
+      <Body tone="muted" size={12}>Guidance, not medical advice.</Body>
+    </Screen>
   );
 }
-
-function Card({ theme, title, children }: { theme: (typeof NAV_THEME)["light"]; title: string; children: string }) {
-  return (
-    <Column spacing={6} style={{ ...styles.card, backgroundColor: theme.card, borderColor: theme.border }}>
-      <ExpoText textStyle={{ color: theme.text, fontSize: 15, fontWeight: "600" }}>{title}</ExpoText>
-      <ExpoText textStyle={{ color: theme.text, fontSize: 14 }}>{children}</ExpoText>
-    </Column>
-  );
-}
-
-const styles = StyleSheet.create({
-  scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 },
-  card: { padding: 16, borderWidth: 1, borderRadius: 16 },
-});

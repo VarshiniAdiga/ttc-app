@@ -1,19 +1,14 @@
-import { Button, Column, Host, Row, Text as ExpoText } from "@expo/ui";
+import { Row } from "@expo/ui";
 import { DEV_USERS, type DevRole } from "@ttc/config/dev-users";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { ScrollView, StyleSheet, View } from "react-native";
 
-import { Container } from "@/components/container";
+import { Body, Card, Chip, Heading, PillButton, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
-import { NAV_THEME } from "@/lib/constants";
 import { useDevUser } from "@/lib/dev-user";
-import { useColorScheme } from "@/lib/use-color-scheme";
 
-// Phase 0 dev harness: switch between the two fake users and confirm the app can
-// reach the Worker as each. Parked: the real auth screens (sign-in/sign-up) return in Phase 10.
+// Phase 0 dev harness, reskinned. Switch between the two fake users and confirm
+// the app can reach the Worker as each. The real auth screens return in Phase 10.
 export default function Home() {
-  const { colorScheme } = useColorScheme();
-  const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
   const { role, setRole } = useDevUser();
 
   const health = useQuery({
@@ -26,81 +21,61 @@ export default function Home() {
   });
 
   return (
-    <Container>
-      <ScrollView style={styles.scrollView} contentInsetAdjustmentBehavior="never">
-        <View style={styles.content}>
-          <Host matchContents={{ vertical: true }}>
-            <Column spacing={16}>
-              <ExpoText textStyle={{ color: theme.text, fontSize: 22, fontWeight: "bold" }}>
-                TTC — Phase 0 dev harness
-              </ExpoText>
+    <Screen eyebrow="Welcome" title="Your journey, together" subtitle="A calm, private space to track, share, and grow toward the two of you becoming three.">
+      <Card variant="olive" spacing={14}>
+        <Body tone="onPrimary" size={13} weight="600">
+          You're exploring as
+        </Body>
+        <Row spacing={10}>
+          {(Object.keys(DEV_USERS) as DevRole[]).map((r) => (
+            <PillButton
+              key={r}
+              label={DEV_USERS[r].label}
+              variant={role === r ? "accent" : "outline"}
+              onPress={() => setRole(r)}
+            />
+          ))}
+        </Row>
+        <Body tone="onPrimary" size={12}>
+          Switch roles anytime — each partner sees only what the other chooses to share.
+        </Body>
+      </Card>
 
-              <Column spacing={8}>
-                <ExpoText textStyle={{ color: theme.text, fontSize: 14 }} style={{ opacity: 0.7 }}>
-                  Acting as
-                </ExpoText>
-                <Row spacing={12}>
-                  {(Object.keys(DEV_USERS) as DevRole[]).map((r) => (
-                    <Button
-                      key={r}
-                      label={DEV_USERS[r].label}
-                      variant={role === r ? "filled" : "outlined"}
-                      onPress={() => setRole(r)}
-                    />
-                  ))}
-                </Row>
-              </Column>
-
-              <ResultCard
-                title="GET /health"
-                theme={theme}
-                query={health}
-                render={(d) => `ok=${d.ok}  env=${d.appEnv}\nuser=${d.user ?? "—"}`}
-              />
-              <ResultCard
-                title="GET /api/me"
-                theme={theme}
-                query={me}
-                render={(d) => `userId=${d.userId}`}
-              />
-            </Column>
-          </Host>
-        </View>
-      </ScrollView>
-    </Container>
+      <Heading>Connection</Heading>
+      <StatusCard title="Worker health" query={health} render={(d) => `Environment: ${d.appEnv}`} ok={(d) => d.ok} />
+      <StatusCard title="Your session" query={me} render={(d) => `user ${d.userId.slice(0, 8)}…`} ok={() => true} />
+    </Screen>
   );
 }
 
-function ResultCard<T>({
+function StatusCard<T>({
   title,
-  theme,
   query,
   render,
+  ok,
 }: {
   title: string;
-  theme: (typeof NAV_THEME)["light"];
   query: UseQueryResult<T>;
-  render: (data: T) => string;
+  render: (d: T) => string;
+  ok: (d: T) => boolean;
 }) {
-  const body = query.isLoading
-    ? "loading…"
-    : query.error
-      ? `error: ${(query.error as Error).message}`
-      : query.data
-        ? render(query.data)
-        : "—";
+  const status = query.isLoading ? "…" : query.error ? "offline" : query.data && ok(query.data) ? "live" : "issue";
+  const tone = status === "live" ? "accent" : "muted";
   return (
-    <Column spacing={6} style={{ ...styles.card, backgroundColor: theme.card, borderColor: theme.border }}>
-      <ExpoText textStyle={{ color: theme.text, fontSize: 15, fontWeight: "600" }}>
-        {title}
-      </ExpoText>
-      <ExpoText textStyle={{ color: theme.text, fontSize: 14 }}>{body}</ExpoText>
-    </Column>
+    <Card spacing={7}>
+      <Row spacing={10} alignment="center">
+        <Body weight="600">{title}</Body>
+        <Chip label={status} tone={tone} />
+      </Row>
+      <Body tone="muted" size={13}>
+        {query.isLoading
+          ? "checking…"
+          : query.error
+            ? (query.error as Error).message
+            : query.data
+              ? render(query.data)
+              : "—"}
+      </Body>
+    </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollView: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 28, paddingBottom: 32 },
-  card: { padding: 16, borderWidth: 1, borderRadius: 16 },
-});

@@ -1,24 +1,19 @@
-import { Button, Column, Host, Switch, Text as ExpoText } from "@expo/ui";
+import { Row, Switch } from "@expo/ui";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ScrollView, StyleSheet, View } from "react-native";
 
-import { Container } from "@/components/container";
+import { Body, Card, Chip, EmptyState, Heading, PillButton, Screen, SkeletonList } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
-import { NAV_THEME } from "@/lib/constants";
 import { useDevUser } from "@/lib/dev-user";
 import { queryClient } from "@/lib/query";
-import { useColorScheme } from "@/lib/use-color-scheme";
 
 // Phase 7 — coaching (the paid feature). The server generates one action per
 // partner from the rules engine and gates reading it behind a pro flag. The dev
-// pro toggle + "generate" button stand in for RevenueCat (Phase 8) and the weekly
-// cron (Phase 11).
+// pro toggle + "generate" button stand in for RevenueCat (Phase 8) and the
+// weekly cron (Phase 11).
 
 type Coaching = { id: string; ruleId: string; ruleVersion: number; body: string; weekOf: string };
 
 export default function CoachingScreen() {
-  const { colorScheme } = useColorScheme();
-  const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
   const { role } = useDevUser();
 
   const pro = useQuery({
@@ -26,7 +21,6 @@ export default function CoachingScreen() {
     queryFn: () => apiFetch<{ isPro: boolean }>("/api/coaching/pro-status"),
   });
 
-  // 402 (pro required) is expected for non-pro users; treat it as "empty", not an error.
   const list = useQuery({
     queryKey: ["coaching", role],
     queryFn: async () => {
@@ -40,8 +34,7 @@ export default function CoachingScreen() {
   });
 
   const setPro = useMutation({
-    mutationFn: (isPro: boolean) =>
-      apiFetch("/api/coaching/dev-pro", { method: "POST", body: JSON.stringify({ isPro }) }),
+    mutationFn: (isPro: boolean) => apiFetch("/api/coaching/dev-pro", { method: "POST", body: JSON.stringify({ isPro }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pro-status", role] });
       queryClient.invalidateQueries({ queryKey: ["coaching", role] });
@@ -56,77 +49,54 @@ export default function CoachingScreen() {
   const isPro = pro.data?.isPro ?? false;
 
   return (
-    <Container>
-      <ScrollView style={styles.scroll} contentInsetAdjustmentBehavior="never">
-        <View style={styles.content}>
-          <Host matchContents={{ vertical: true }}>
-            <Column spacing={16}>
-              <ExpoText textStyle={{ color: theme.text, fontSize: 22, fontWeight: "bold" }}>
-                {`Coaching (${role})`}
-              </ExpoText>
+    <Screen eyebrow="Premiere Plus" title="Your coaching" subtitle="Gentle, personalized guidance for the week — grounded in what you've both logged.">
+      {!isPro ? (
+        <Card variant="olive" spacing={14}>
+          <Row spacing={10} alignment="center">
+            <Body tone="onPrimary" size={22} weight="bold">Unlock coaching</Body>
+            <Chip label="Pro" tone="accent" />
+          </Row>
+          <Body tone="onPrimary" size={14}>
+            Deeper insights and gentle guidance, when you're ready. The server refuses to send coaching
+            without Pro — the client can't unlock it on its own.
+          </Body>
+          <Row spacing={12}>
+            <PillButton variant="accent" label="Try 7 days for free" onPress={() => setPro.mutate(true)} disabled={setPro.isPending} />
+          </Row>
+        </Card>
+      ) : (
+        <Card spacing={10}>
+          <Row spacing={10} alignment="center">
+            <Body weight="600">Pro active (dev toggle)</Body>
+            <Switch value={isPro} onValueChange={(v) => setPro.mutate(v)} label="" />
+          </Row>
+          <Body tone="muted" size={12}>Real subscriptions arrive in Phase 8. This fakes the entitlement.</Body>
+        </Card>
+      )}
 
-              <Column spacing={6} style={{ ...styles.card, backgroundColor: theme.card, borderColor: theme.border }}>
-                <Switch value={isPro} onValueChange={(v) => setPro.mutate(v)} label="Pro (dev toggle)" />
-                <ExpoText textStyle={{ color: theme.text, fontSize: 12 }} style={{ opacity: 0.6 }}>
-                  Real subscriptions arrive in Phase 8. This fakes the entitlement.
-                </ExpoText>
-              </Column>
+      {isPro && (
+        <>
+          <Row spacing={12}>
+            <PillButton label={generate.isPending ? "Generating…" : "Generate this week"} onPress={() => generate.mutate()} disabled={generate.isPending} />
+          </Row>
+          {generate.data && <Body tone="muted" size={13}>{`Generated ${generate.data.generated} action(s) for the couple.`}</Body>}
+          {generate.error && <Body tone="error" size={13}>{(generate.error as Error).message}</Body>}
 
-              <Button
-                label={generate.isPending ? "Generating…" : "Generate this week's coaching"}
-                onPress={() => generate.mutate()}
-              />
-              {generate.data && (
-                <ExpoText textStyle={{ color: theme.text, fontSize: 13 }} style={{ opacity: 0.7 }}>
-                  {`Generated ${generate.data.generated} action(s) for the couple.`}
-                </ExpoText>
-              )}
-              {generate.error && (
-                <ExpoText textStyle={{ color: theme.notification, fontSize: 13 }}>
-                  {(generate.error as Error).message}
-                </ExpoText>
-              )}
-
-              <ExpoText textStyle={{ color: theme.text, fontSize: 16, fontWeight: "600" }}>
-                Your coaching
-              </ExpoText>
-
-              {!isPro ? (
-                <Column spacing={6} style={{ ...styles.card, backgroundColor: theme.card, borderColor: theme.primary }}>
-                  <ExpoText textStyle={{ color: theme.text, fontSize: 15, fontWeight: "600" }}>
-                    Unlock personalized coaching
-                  </ExpoText>
-                  <ExpoText textStyle={{ color: theme.text, fontSize: 14 }}>
-                    Turn on Pro above to see your weekly guidance. The server refuses to send it
-                    otherwise — the client can't unlock it on its own.
-                  </ExpoText>
-                </Column>
-              ) : list.isLoading ? (
-                <ExpoText textStyle={{ color: theme.text, fontSize: 14 }}>loading…</ExpoText>
-              ) : list.data && list.data.coaching.length > 0 ? (
-                list.data.coaching.map((c) => (
-                  <Column key={c.id} spacing={4} style={{ ...styles.card, backgroundColor: theme.card, borderColor: theme.border }}>
-                    <ExpoText textStyle={{ color: theme.text, fontSize: 12 }} style={{ opacity: 0.6 }}>
-                      {`Week of ${c.weekOf} · ${c.ruleId} v${c.ruleVersion}`}
-                    </ExpoText>
-                    <ExpoText textStyle={{ color: theme.text, fontSize: 14 }}>{c.body}</ExpoText>
-                  </Column>
-                ))
-              ) : (
-                <ExpoText textStyle={{ color: theme.text, fontSize: 14 }} style={{ opacity: 0.7 }}>
-                  No coaching yet — tap “Generate” after logging some data.
-                </ExpoText>
-              )}
-            </Column>
-          </Host>
-        </View>
-      </ScrollView>
-    </Container>
+          <Heading>This week's guidance</Heading>
+          {list.isLoading ? (
+            <SkeletonList rows={2} />
+          ) : list.data && list.data.coaching.length > 0 ? (
+            list.data.coaching.map((c) => (
+              <Card key={c.id} variant="feature" spacing={6}>
+                <Body tone="muted" size={12}>{`Week of ${c.weekOf} · ${c.ruleId} v${c.ruleVersion}`}</Body>
+                <Body size={15}>{c.body}</Body>
+              </Card>
+            ))
+          ) : (
+            <EmptyState title="No coaching yet" subtitle="Tap “Generate this week” after you’ve both logged some data." />
+          )}
+        </>
+      )}
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 40 },
-  card: { padding: 16, borderWidth: 1, borderRadius: 16 },
-});
