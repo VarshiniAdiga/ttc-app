@@ -1,4 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { Redirect } from "expo-router";
 import {
   Drawer,
   DrawerContentScrollView,
@@ -7,7 +9,9 @@ import {
 } from "expo-router/drawer";
 import { Text, View, type ColorValue } from "react-native";
 
+import { apiFetch } from "@/lib/api";
 import { FONTS, useTheme } from "@/lib/constants";
+import { DEV_SWITCH_ALLOWED, useAuth } from "@/lib/session";
 
 // The Jogi-themed sidebar: an olive brand cap over a cream list, active items
 // rendered as lime pills.
@@ -30,6 +34,20 @@ function DrawerContent(props: DrawerContentComponentProps) {
 
 const DrawerLayout = () => {
   const theme = useTheme();
+  const session = useAuth();
+  const user = session.data?.user;
+
+  // Only needed to decide onboarding; runs once a real user is signed in.
+  const profile = useQuery({
+    queryKey: ["profile", "gate", user?.id],
+    queryFn: () => apiFetch<{ profile: { role: string | null } | null }>("/api/profile"),
+    enabled: !!user,
+  });
+
+  // Production (dev switcher off): require a real login.
+  if (!DEV_SWITCH_ALLOWED && !user && !session.isPending) return <Redirect href="/(auth)" />;
+  // Signed in but hasn't picked a role yet → onboarding.
+  if (user && profile.data && !profile.data.profile?.role) return <Redirect href="/(auth)" />;
 
   const icon =
     (name: keyof typeof Ionicons.glyphMap) =>
@@ -57,6 +75,8 @@ const DrawerLayout = () => {
       <Drawer.Screen name="consent" options={{ headerTitle: "Sharing", drawerLabel: "Sharing", drawerIcon: icon("lock-closed-outline") }} />
       <Drawer.Screen name="todos" options={{ headerTitle: "To-dos", drawerLabel: "To-dos & invite", drawerIcon: icon("checkbox-outline") }} />
       <Drawer.Screen name="coaching" options={{ headerTitle: "Coaching", drawerLabel: "Coaching (Pro)", drawerIcon: icon("sparkles-outline") }} />
+      <Drawer.Screen name="learn" options={{ headerTitle: "Learn", drawerLabel: "Learn", drawerIcon: icon("book-outline") }} />
+      <Drawer.Screen name="privacy" options={{ headerTitle: "Privacy", drawerLabel: "Privacy & data", drawerIcon: icon("shield-checkmark-outline") }} />
     </Drawer>
   );
 };

@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import postgres, { type Sql } from "postgres";
 
 import { acceptInvite, createInvite, InviteError } from "../src/invite";
-import { couple, sharingConsent } from "../src/schema";
+import { sharingConsent } from "../src/schema";
 
 // Own throwaway DB (separate from rls.test's ttc_test so the files can run in
 // parallel). Exercises the couple + consent creation and the expiry/single-use

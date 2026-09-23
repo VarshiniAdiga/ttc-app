@@ -8,6 +8,16 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 export function createAuth() {
   const db = createDb();
 
+  // Phase 10 — Apple/Google are enabled only when their credentials are set,
+  // so email/password keeps working locally without any OAuth setup.
+  const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
+  if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+    socialProviders.google = { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET };
+  }
+  if (env.APPLE_CLIENT_ID && env.APPLE_CLIENT_SECRET) {
+    socialProviders.apple = { clientId: env.APPLE_CLIENT_ID, clientSecret: env.APPLE_CLIENT_SECRET };
+  }
+
   return betterAuth({
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -17,7 +27,11 @@ export function createAuth() {
     trustedOrigins: [env.CORS_ORIGIN, "ttc://", "exp://", "http://localhost:8081"],
     emailAndPassword: {
       enabled: true,
+      // Email verification requires a mail sender (Resend). Left off so local
+      // testing isn't blocked; turn on once the sender is wired.
+      requireEmailVerification: false,
     },
+    socialProviders,
     // uncomment cookieCache setting when ready to deploy to Cloudflare using *.workers.dev domains
     // session: {
     //   cookieCache: {

@@ -52,6 +52,7 @@ export const profile = pgTable("profile", {
     .references(() => user.id, { onDelete: "cascade" }),
   displayName: text("display_name"),
   role: appRole("role"),
+  pushToken: text("push_token"), // Expo push token for discreet notifications (Phase 9)
   ...timestamps,
 });
 

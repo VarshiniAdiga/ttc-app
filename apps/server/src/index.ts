@@ -11,6 +11,9 @@ import consent from "./routes/consent";
 import dashboard from "./routes/dashboard";
 import invite from "./routes/invite";
 import logs from "./routes/logs";
+import privacy from "./routes/privacy";
+import profile from "./routes/profile";
+import revenuecat from "./routes/revenuecat";
 import todos from "./routes/todos";
 
 type Vars = { userId: string | null };
@@ -28,11 +31,25 @@ app.use(
   }),
 );
 
-// Dev login shim: outside production, trust the x-dev-user-id header as the current user.
-// Phase 10 replaces this with the verified Better Auth session; nothing else changes.
+// Resolve the current user for every request. Two sources, in priority order:
+//   1. Dev shim (non-production only): the x-dev-user-id header, so the app's
+//      dev user-switcher can walk flows as "her"/"him" without logging in.
+//   2. Real login (Phase 10): the verified Better Auth session. In production
+//      this is the ONLY source — the dev shim is off.
+// Everything downstream just reads c.get("userId"); it never learns which source.
 app.use("/*", async (c, next) => {
   const devUser = env.APP_ENV !== "production" ? c.req.header("x-dev-user-id") : undefined;
-  c.set("userId", devUser ?? null);
+  if (devUser) {
+    c.set("userId", devUser);
+    return next();
+  }
+  // Only hit the DB for a session when the request actually carries auth.
+  if (c.req.header("cookie") || c.req.header("authorization")) {
+    const session = await createAuth().api.getSession({ headers: c.req.raw.headers });
+    c.set("userId", session?.user?.id ?? null);
+  } else {
+    c.set("userId", null);
+  }
   await next();
 });
 
@@ -74,7 +91,16 @@ app.route("/api/dashboard", dashboard);
 app.route("/api/todos", todos);
 app.route("/api/invite", invite);
 
-// Phase 7 — coaching rules engine (paid, gated behind a fake pro flag for now).
+// Phase 7 — coaching rules engine (paid).
 app.route("/api/coaching", coaching);
+
+// Phase 8 — RevenueCat webhook writes the real `pro` entitlement (server-only).
+app.route("/api/revenuecat", revenuecat);
+
+// Phase 9 — privacy controls: export everything + one-tap hard delete.
+app.route("/api/privacy", privacy);
+
+// Phase 10 — the user's own profile (role, display name, push token).
+app.route("/api/profile", profile);
 
 export default app;

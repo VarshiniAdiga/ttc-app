@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#ECE6D5" />
+  <rect x="0" y="0" width="1200" height="16" fill="#6C6B31" />
+  <text x="80" y="150" font-family="Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="6" fill="#DC6E3A">TRYING, TOGETHER</text>
+  <text x="76" y="310" font-family="Georgia, serif" font-size="104" font-weight="700" fill="#2C2B18">Fertility,</text>
+  <text x="76" y="420" font-family="Georgia, serif" font-size="104" font-weight="700" fill="#2C2B18">as a team.</text>
+  <text x="80" y="500" font-family="Arial, sans-serif" font-size="30" fill="#84815F">Her cycle + his habits → one weekly plan. Private by design.</text>
+  <circle cx="1040" cy="300" r="120" fill="#D8E85C" />
+  <text x="1040" y="335" font-family="Georgia, serif" font-size="96" font-weight="700" fill="#2C2B18" text-anchor="middle">TTC</text>
+</svg>

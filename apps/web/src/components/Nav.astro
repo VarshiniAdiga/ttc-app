@@ -1,0 +1,71 @@
+---
+const links = [
+  { href: "/features", label: "Features" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/faq", label: "FAQ" },
+];
+---
+
+<header>
+  <div class="wrap bar">
+    <a href="/" class="brand">
+      Trying, Together
+      <span>TTC</span>
+    </a>
+    <nav>
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href="/get" class="btn btn-accent get">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .brand span {
+    display: inline-block;
+    margin-left: 8px;
+    font-family: var(--sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    color: var(--olive);
+    vertical-align: middle;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--ink);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  nav a.get {
+    padding: 9px 18px;
+  }
+  @media (max-width: 560px) {
+    nav a:not(.get) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Privacy Policy" description="How Trying, Together protects your data: consent-based sharing, no data sales, and one-tap deletion.">
+  <section class="wrap narrow">
+    <p class="eyebrow">Privacy</p>
+    <h1>Your data is yours.</h1>
+    <p class="lede">
+      Fertility data is deeply personal. We built Trying, Together so privacy isn’t a setting you have to
+      find — it’s the default, enforced by the system itself.
+    </p>
+
+    <h2>Our pledge</h2>
+    <ul class="pledge">
+      <li>Sharing is off by default. Your partner sees only the categories you switch on.</li>
+      <li>Access rules are enforced in the database, not just the app UI.</li>
+      <li>We never sell your data or share it with advertisers.</li>
+      <li>You can export everything, and delete-everything is a real, permanent erase.</li>
+    </ul>
+
+    <h2>What we collect</h2>
+    <p>
+      The health information you choose to log (cycle, temperature, ovulation tests, mucus, symptoms, and
+      habit entries), your account details (name and email), and basic technical data needed to run the
+      service. OPK photos are stored in private storage accessible only to you.
+    </p>
+
+    <h2>How we use it</h2>
+    <p>
+      To provide the app: showing your logs, computing predictions, powering consent-based sharing, and —
+      if you subscribe to Pro — generating your weekly coaching. We do not use your health data for
+      advertising.
+    </p>
+
+    <h2>Sharing between partners</h2>
+    <p>
+      Nothing is shared until you grant consent per category. Revoking consent cuts off access immediately
+      on the next load. The server decides what’s visible; the app cannot override it.
+    </p>
+
+    <h2>Your controls</h2>
+    <p>
+      Export your data as a file at any time. Delete your account and all associated data — logs, photos,
+      sharing rules, coaching and sessions — with one tap. An optional PIN or biometric lock protects the
+      app on your device.
+    </p>
+
+    <p class="note muted">
+      This page is a plain-language summary. A full legal policy is reviewed by a privacy attorney before
+      public launch. Questions? Contact privacy@tryingtogether.app.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .narrow { max-width: 760px; }
+  .lede { font-size: 1.15rem; color: var(--muted); }
+  .pledge { display: grid; gap: 10px; padding-left: 20px; }
+  .muted { color: var(--muted); }
+  .note { margin-top: 30px; font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 18px; }
+</style>

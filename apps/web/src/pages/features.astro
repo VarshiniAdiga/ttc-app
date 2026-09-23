@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+
+const sections = [
+  {
+    h: "Track her cycle",
+    p: "Log period flow, basal body temperature, ovulation (OPK) tests, cervical mucus and symptoms — one entry per day. OPK photos are stored privately, visible only to you.",
+  },
+  {
+    h: "Honest predictions",
+    p: "Our fertile-window and next-period estimates adapt to your real cycles. We never assume a textbook 28 days, and with too little data we say “not enough data” instead of inventing a date.",
+  },
+  {
+    h: "Track his habits",
+    p: "Sleep, alcohol, exercise, heat exposure and stress all shape male fertility. A quick daily log keeps his side of the picture in view.",
+  },
+  {
+    h: "Share only what you choose",
+    p: "Every category is private until you switch it on. The rules live in the database, so the server — not the app — decides what a partner can see.",
+  },
+  {
+    h: "Weekly coaching",
+    p: "Pro turns your combined logs into one gentle action for each of you every week — a doctor nudge, a fertile-window heads-up, a habit tweak — always framed as guidance, not medical advice.",
+  },
+  {
+    h: "Yours to keep or erase",
+    p: "Export everything as a file anytime. Delete-everything is a real, permanent erase. An optional PIN or biometric lock keeps prying eyes out.",
+  },
+];
+---
+
+<Base title="Features" description="Cycle tracking, habit logging, honest predictions, consent-based sharing and weekly coaching — for both partners.">
+  <section class="wrap">
+    <p class="eyebrow">Features</p>
+    <h1>Everything you need, nothing you don’t.</h1>
+    <div class="grid grid-2">
+      {sections.map((s) => (
+        <div class="card">
+          <h3>{s.h}</h3>
+          <p class="muted">{s.p}</p>
+        </div>
+      ))}
+    </div>
+    <p class="foot"><a class="btn btn-primary" href="/get">Get the app</a></p>
+  </section>
+</Base>
+
+<style>
+  .muted { color: var(--muted); }
+  .foot { margin-top: 32px; }
+</style>

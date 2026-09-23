@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+
+const free = ["Cycle, temperature, OPK, mucus & symptom tracking", "His daily habit log", "Adaptive fertile-window predictions", "Consent-based sharing & shared dashboard", "Shared to-dos & partner invite", "Export & delete-everything", "App lock (PIN / biometric)"];
+const pro = ["Everything in Free", "Weekly personalized coaching for both partners", "Doctor-nudge & cycle-health insights", "Priority guidance as your data grows"];
+---
+
+<Base title="Pricing" description="Free to track for both partners. Upgrade to Pro for weekly personalized coaching.">
+  <section class="wrap">
+    <p class="eyebrow">Pricing</p>
+    <h1>Free to track. Coaching when you’re ready.</h1>
+    <div class="grid grid-2 plans">
+      <div class="card">
+        <h3>Free</h3>
+        <p class="price">$0</p>
+        <ul>{free.map((f) => <li>{f}</li>)}</ul>
+        <a class="btn btn-outline" href="/get">Get started</a>
+      </div>
+      <div class="card featured">
+        <h3>Pro</h3>
+        <p class="price">Subscription</p>
+        <ul>{pro.map((f) => <li>{f}</li>)}</ul>
+        <a class="btn btn-accent" href="/get">Try Pro</a>
+      </div>
+    </div>
+    <p class="muted note">Subscriptions are billed through the App Store or Google Play and can be cancelled anytime.</p>
+  </section>
+</Base>
+
+<style>
+  .plans { align-items: start; margin-top: 8px; }
+  .featured { border-color: var(--olive); border-width: 2px; }
+  .price { font-family: var(--serif); font-size: 2rem; margin: 4px 0 16px; }
+  ul { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 10px; }
+  li { padding-left: 26px; position: relative; }
+  li::before { content: "✓"; position: absolute; left: 0; color: var(--olive); font-weight: 700; }
+  .muted { color: var(--muted); }
+  .note { margin-top: 22px; font-size: 0.9rem; }
+</style>

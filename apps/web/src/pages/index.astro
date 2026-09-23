@@ -1,0 +1,121 @@
+---
+import Base from "../layouts/Base.astro";
+
+const features = [
+  { title: "Her cycle, tracked kindly", body: "Period, temperature, ovulation tests, cervical mucus and symptoms — one tap a day, with honest predictions that never fake a date." },
+  { title: "His habits, that matter too", body: "Sleep, alcohol, exercise, heat and stress. Fertility is a two-person picture; we treat it like one." },
+  { title: "One weekly plan", body: "Gentle, personalized guidance drawn from what you've both logged — what to do next, together." },
+];
+
+const pledge = [
+  "Sharing is OFF by default — your partner sees only what you choose.",
+  "Privacy is enforced by the database, not just the app.",
+  "One tap deletes everything, for real. Export your data anytime.",
+  "We never sell your data. Ever.",
+];
+---
+
+<Base
+  title="Fertility, as a team"
+  description="Trying, Together coaches both partners as a team — her cycle tracking plus his habits into one weekly plan. Private by design."
+>
+  <!-- Hero -->
+  <section class="hero wrap">
+    <p class="eyebrow">Trying to conceive</p>
+    <h1>Your journey, together.</h1>
+    <p class="lede">
+      A calm, private space for both partners — her cycle tracking and his daily habits, turned into
+      one clear “here’s what to do next” each week.
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="/get">Get the app</a>
+      <a class="btn btn-outline" href="/features">See how it works</a>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="wrap">
+    <p class="eyebrow">Why it works</p>
+    <h2>Built for two.</h2>
+    <div class="grid grid-3">
+      {features.map((f) => (
+        <div class="card">
+          <h3>{f.title}</h3>
+          <p class="muted">{f.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Privacy pledge -->
+  <section class="pledge">
+    <div class="wrap">
+      <p class="eyebrow">Our pledge</p>
+      <h2>We never sell your data.</h2>
+      <ul>
+        {pledge.map((p) => <li>{p}</li>)}
+      </ul>
+      <a class="btn btn-accent" href="/privacy">Read our privacy pledge</a>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="wrap center">
+    <h2>Start your journey, together.</h2>
+    <p class="muted">Free to track. Coaching when you’re ready.</p>
+    <a class="btn btn-primary" href="/get">Get the app</a>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding: 80px 24px 40px;
+    max-width: 780px;
+  }
+  .lede {
+    font-size: 1.2rem;
+    color: var(--muted);
+    max-width: 620px;
+  }
+  .cta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .pledge {
+    background: var(--olive);
+    color: var(--cream);
+  }
+  .pledge .eyebrow {
+    color: var(--lime);
+  }
+  .pledge h2 {
+    color: var(--cream);
+  }
+  .pledge ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    display: grid;
+    gap: 12px;
+    max-width: 640px;
+  }
+  .pledge li {
+    padding-left: 28px;
+    position: relative;
+  }
+  .pledge li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--lime);
+    font-weight: 700;
+  }
+  .center {
+    text-align: center;
+  }
+</style>

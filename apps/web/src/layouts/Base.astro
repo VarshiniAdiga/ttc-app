@@ -1,0 +1,161 @@
+---
+// Shared page shell: brand styling + per-page SEO (title/description, canonical,
+// Open Graph, Twitter card). Reuses the app's "Jogi" palette so the site and app
+// read as one brand.
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+
+export interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const { title, description, image = "/og.svg" } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const fullTitle = `${title} · Trying, Together`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="Trying, Together" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --oat: #ece6d5;
+    --cream: #f7f2e7;
+    --card-alt: #fcfaf4;
+    --border: #dbd4c0;
+    --olive: #6c6b31;
+    --lime: #d8e85c;
+    --ink: #2c2b18;
+    --muted: #84815f;
+    --terracotta: #dc6e3a;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: var(--oat);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    min-height: 60vh;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--serif);
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    margin: 0 0 0.4em;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+  }
+  h2 {
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  }
+  p {
+    margin: 0 0 1em;
+  }
+  a {
+    color: var(--olive);
+  }
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--terracotta);
+    margin-bottom: 0.6em;
+  }
+  .btn {
+    display: inline-block;
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--olive);
+    color: var(--cream);
+  }
+  .btn-accent {
+    background: var(--lime);
+    color: var(--ink);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--border);
+  }
+  .card {
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 26px;
+  }
+  .grid {
+    display: grid;
+    gap: 18px;
+  }
+  @media (min-width: 720px) {
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  section {
+    padding: 56px 0;
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+import Base from "../layouts/Base.astro";
+
+const faqs = [
+  { q: "Is Trying, Together really private?", a: "Yes. Sharing is off by default and enforced at the database level — the server, not the app, decides what your partner can see. We never sell your data, and one tap permanently deletes everything." },
+  { q: "Do both partners need the app?", a: "You can start solo. To share a dashboard and get team coaching, invite your partner with a single-use link; they choose their role (tracking cycle or habits) when they join." },
+  { q: "How accurate are the predictions?", a: "Predictions adapt to your actual logged cycles rather than assuming a standard 28 days. With fewer than three cycles we tell you there isn't enough data yet, instead of showing a made-up date." },
+  { q: "Is this medical advice?", a: "No. Everything in the app is framed as gentle guidance, not medical advice, and our thresholds and copy are reviewed before launch. Always talk to a clinician about your specific situation." },
+  { q: "What does Pro include?", a: "Pro unlocks weekly personalized coaching for both partners — a single, gentle action each, drawn from your combined logs. Tracking itself is free." },
+  { q: "Can I export or delete my data?", a: "Anytime. Export gives you a full copy as a file; delete-everything is a real, permanent erase that leaves nothing behind." },
+];
+
+// FAQ schema for rich results.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<Base title="FAQ" description="Answers about privacy, predictions, sharing, Pro coaching, and your data.">
+  <section class="wrap narrow">
+    <p class="eyebrow">Questions</p>
+    <h1>Frequently asked</h1>
+    {faqs.map((f) => (
+      <details class="card">
+        <summary>{f.q}</summary>
+        <p class="muted">{f.a}</p>
+      </details>
+    ))}
+  </section>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</Base>
+
+<style>
+  .narrow { max-width: 760px; }
+  details { margin-bottom: 14px; }
+  summary { font-weight: 600; cursor: pointer; font-size: 1.05rem; }
+  details[open] summary { margin-bottom: 10px; }
+  .muted { color: var(--muted); margin: 0; }
+</style>

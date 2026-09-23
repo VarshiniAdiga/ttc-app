@@ -1,0 +1,53 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="wrap cols">
+    <div>
+      <strong>Trying, Together</strong>
+      <p class="muted">Fertility, as a team. Private by design.</p>
+    </div>
+    <nav>
+      <a href="/features">Features</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/faq">FAQ</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms</a>
+      <a href="/get">Get the app</a>
+    </nav>
+  </div>
+  <div class="wrap fine muted">© {year} Trying, Together. We never sell your data.</div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--cream);
+    padding: 40px 0 28px;
+    margin-top: 40px;
+  }
+  .cols {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-between;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer nav a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+  .fine {
+    margin-top: 22px;
+    font-size: 0.82rem;
+  }
+</style>

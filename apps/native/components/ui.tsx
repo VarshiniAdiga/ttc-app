@@ -1,4 +1,4 @@
-import { Column, Host, Row, Text as ExpoText } from "@expo/ui";
+import { Column, Host, Row, Text as ExpoText, TextInput } from "@expo/ui";
 import type { ReactNode } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import Animated, { FadeInDown, ReduceMotion } from "react-native-reanimated";
@@ -132,6 +132,50 @@ export function Card({
     >
       {children}
     </Column>
+  );
+}
+
+/** Themed single-line text input (universal @expo/ui TextInput, so it works
+ *  inside a Host — unlike a raw RN TextInput). Uncontrolled: the field manages
+ *  its own text and reports every change via onChangeText (keep that in state). */
+export function Input({
+  defaultValue,
+  onChangeText,
+  placeholder,
+  secureTextEntry,
+  keyboardType,
+  autoCapitalize,
+  maxLength,
+}: {
+  defaultValue?: string;
+  onChangeText: (t: string) => void;
+  placeholder?: string;
+  secureTextEntry?: boolean;
+  keyboardType?: "default" | "email-address" | "number-pad";
+  autoCapitalize?: "none" | "sentences";
+  maxLength?: number;
+}) {
+  const theme = useTheme();
+  return (
+    <TextInput
+      defaultValue={defaultValue}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={theme.mutedText}
+      secureTextEntry={secureTextEntry}
+      keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize}
+      maxLength={maxLength}
+      style={{
+        backgroundColor: theme.cardAlt,
+        borderRadius: RADII.md,
+        borderWidth: 1,
+        borderColor: theme.border,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+      }}
+      textStyle={{ color: theme.text, fontSize: 16 }}
+    />
   );
 }
 

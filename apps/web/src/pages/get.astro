@@ -1,0 +1,44 @@
+---
+import Base from "../layouts/Base.astro";
+import { APP_STORE_URL, PLAY_STORE_URL } from "../consts";
+---
+
+<Base title="Get the app" description="Download Trying, Together for iPhone or Android.">
+  <section class="wrap center">
+    <p class="eyebrow">Download</p>
+    <h1>Get the app</h1>
+    <p class="lede">Sending you to the right store… or pick one below.</p>
+    <div class="stores">
+      <a class="btn btn-primary" id="ios" href={APP_STORE_URL}>Download on the App Store</a>
+      <a class="btn btn-accent" id="android" href={PLAY_STORE_URL}>Get it on Google Play</a>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ APP_STORE_URL, PLAY_STORE_URL }}>
+  // Smart store link: iPhone/iPad → App Store, Android → Play, otherwise stay.
+  const ua = navigator.userAgent || "";
+  if (/android/i.test(ua)) {
+    location.replace(PLAY_STORE_URL);
+  } else if (/iphone|ipad|ipod/i.test(ua)) {
+    location.replace(APP_STORE_URL);
+  }
+</script>
+
+<style>
+  .center {
+    text-align: center;
+    padding: 80px 24px;
+  }
+  .lede {
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .stores {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+</style>

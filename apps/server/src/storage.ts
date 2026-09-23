@@ -43,6 +43,27 @@ export async function uploadOpkPhoto(
   return `${BUCKET}/${objectPath}`;
 }
 
+// Hard-delete every OPK photo belonging to a user (their `${userId}/` folder).
+// Used by Phase 9's delete-everything. No-op when storage is disabled.
+export async function deleteUserPhotos(userId: string): Promise<number> {
+  if (!storageEnabled()) return 0;
+  const listRes = await fetch(`${env.SUPABASE_URL}/storage/v1/object/list/${BUCKET}`, {
+    method: "POST",
+    headers: { ...authHeaders(), "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix: `${userId}/`, limit: 1000 }),
+  });
+  if (!listRes.ok) return 0;
+  const objects = (await listRes.json()) as { name: string }[];
+  if (!objects.length) return 0;
+  const prefixes = objects.map((o) => `${userId}/${o.name}`);
+  await fetch(`${env.SUPABASE_URL}/storage/v1/object/${BUCKET}`, {
+    method: "DELETE",
+    headers: { ...authHeaders(), "Content-Type": "application/json" },
+    body: JSON.stringify({ prefixes }),
+  });
+  return prefixes.length;
+}
+
 // Short-lived signed URL so the private object can be shown to its owner only.
 export async function signedOpkUrl(storedPath: string, expiresIn = 3600): Promise<string> {
   const objectPath = storedPath.replace(new RegExp(`^${BUCKET}/`), "");
